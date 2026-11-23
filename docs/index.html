@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>読み込み中</title>
+<meta name="description" content="">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="./" class="brand" id="brand"></a>
+    <nav>
+      <a href="#rank" data-t="nav_rank">ランキング</a>
+      <a href="#map" id="navmap" hidden data-t="nav_map">地図</a>
+      <a href="#search" id="navsearch" hidden data-t="nav_search">検索</a>
+      <a href="about.html" data-t="nav_about">出典・注意</a>
+      <button id="langbtn" hidden>EN</button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1 id="title"></h1>
+    <p class="tagline" id="tagline"></p>
+    <div class="stats" id="stats"></div>
+    <p class="updated" id="updated"></p>
+  </div>
+</section>
+
+<main class="wrap">
+  <div id="status" class="status" hidden></div>
+
+  <section id="search" hidden>
+    <h2 data-t="h_search">さがす</h2>
+    <input id="q" type="search" autocomplete="off">
+    <div id="results"></div>
+  </section>
+
+  <section id="map" hidden>
+    <h2 data-t="h_map">地図</h2>
+    <div class="mapctl" id="mapctl"></div>
+    <div id="leaflet"></div>
+    <p class="note" id="mapnote"></p>
+  </section>
+
+  <section id="rank">
+    <h2 data-t="h_rank">ランキング</h2>
+    <div class="tabs" id="tabs"></div>
+    <div id="ranking"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p id="footsrc"></p>
+    <p><a href="about.html" data-t="f_about">出典・計算方法・免責・訂正のお願い</a></p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="app.js"></script>
+</body>
+</html>

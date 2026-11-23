@@ -1,0 +1,65 @@
+name: update
+on:
+  schedule:
+    - cron: "17 18 1 * *"   # 毎月2日 03:17（日本時間）
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["docs/**"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/cache@v4
+        with:
+          path: raw/cache
+          key: raw-cache-${{ github.run_id }}
+          restore-keys: raw-cache-
+      - run: pip install -r requirements.txt
+      - name: 公開データを取得・検証・集計
+        run: python fetch.py
+        env:
+          OC_WAIT: "1.5"
+          EDINET_API_KEY: ${{ secrets.EDINET_API_KEY }}
+      - name: 変更があればコミット
+        run: |
+          git config user.name "arai-sarai-data"
+          git config user.email "arai-sarai-data@users.noreply.github.com"
+          git add docs/data
+          git diff --cached --quiet || git commit -m "データ更新 $(date +%Y-%m-%d)"
+          git push
+
+  deploy:
+    needs: [fetch]
+    if: always()
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: d
+        uses: actions/deploy-pages@v4

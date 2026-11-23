@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>出典・注意</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a href="./" class="brand" id="brand"></a><nav><a href="./" id="back">← 戻る</a></nav></div></header>
+<main class="wrap about" id="body"><p>読み込み中…</p></main>
+<script>
+(function(){
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  var en = new URLSearchParams(location.search).get("lang")==="en";
+  Promise.all([
+    fetch("site.json").then(function(r){return r.json();}),
+    fetch("data/meta.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})
+  ]).then(function(a){
+    var S=a[0], M=a[1];
+    document.documentElement.style.setProperty("--c", S.color||"#d6336c");
+    var title = en && S.title_en ? S.title_en : S.title;
+    document.getElementById("brand").textContent = title;
+    document.title = (en?"Sources & notes - ":"出典・注意｜") + title;
+    var src = M.sources || S.sources || [];
+    var A = (en && S.about_en) || S.about || {};
+    var issues = S.repo ? "https://github.com/" + S.repo + "/issues/new" : "";
+    var h = "";
+    h += "<h2>"+(en?"What this site is":"このサイトについて")+"</h2><p>"+esc(A.what||"")+"</p>";
+    h += "<h2>"+(en?"Sources":"出典")+"</h2><ul>";
+    src.forEach(function(s){
+      h += '<li><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.name)+"</a>"+(s.org?"（"+esc(s.org)+"）":"")+
+           (s.license?"　"+(en?"License: ":"利用条件：")+esc(s.license):"")+(s.retrieved?"　"+(en?"Retrieved: ":"取得日：")+esc(s.retrieved):"")+"</li>";
+    });
+    h += "</ul><p>"+esc(en
+      ? "This site processes and aggregates the data above. It is not an official publication of the original providers, and the providers do not endorse it."
+      : "本サイトは上記のデータを加工・集計して作成したものです（「出典元データを加工して作成」）。出典元の機関が作成・公表したものではなく、出典元の機関が内容を保証するものでもありません。")+"</p>";
+    h += "<h2>"+(en?"How the numbers are calculated":"計算方法")+"</h2><p>"+esc(A.method||"")+"</p>";
+    h += "<p>"+esc(en?"Each ranking has its own 'How this is calculated' note. The full processing code is public in the repository.":"各ランキングの「計算方法と注意」も参照してください。データの取得・加工のプログラムはすべてリポジトリで公開しています。")+
+         (S.repo?' <a href="https://github.com/'+esc(S.repo)+'" target="_blank" rel="noopener">'+(en?"Repository":"リポジトリ")+"</a>":"")+"</p>";
+    h += "<h2>"+(en?"Important notes":"注意事項")+"</h2><ul>";
+    (A.notes||[]).forEach(function(n){h += "<li>"+esc(n)+"</li>";});
+    h += "<li>"+esc(en
+      ? "Numbers are shown as published in the original data. They are facts from public records, not evaluations of any organization."
+      : "数値は公開データに記載された事実をそのまま集計したもので、特定の企業・団体・施設の良し悪しを評価するものではありません。")+"</li>";
+    h += "<li>"+esc(en
+      ? "Original data may contain errors or may have been revised. Always check the original record before acting on it."
+      : "元データの誤りや、その後の修正が反映されていない場合があります。重要な判断の前には必ず原本を確認してください。")+"</li>";
+    h += "<li>"+esc(en
+      ? "This site does not collect personal information, show ads, or receive money from any organization listed."
+      : "本サイトは個人情報を収集せず、広告を掲載せず、掲載している企業・団体・施設から金銭を受け取っていません。")+"</li>";
+    h += "</ul>";
+    h += "<h2>"+(en?"Disclaimer":"免責")+"</h2><p>"+esc(en
+      ? "We make every effort to keep the data accurate, but we do not guarantee it. We accept no liability for any damage arising from use of this site."
+      : "正確さには細心の注意を払っていますが、内容を保証するものではありません。本サイトの利用によって生じたいかなる損害についても責任を負いません。")+"</p>";
+    h += "<h2>"+(en?"Corrections and removal requests":"訂正・削除のお願い")+"</h2><p>"+esc(en
+      ? "If you find an error, or if you are a listed organization and believe something is wrong, please tell us. We will check against the original record and fix it promptly."
+      : "誤りを見つけた方、掲載されている企業・団体の方で内容に誤りがあると考える方は、お知らせください。原本と照合し、速やかに訂正します。")+"</p>";
+    if (issues) h += '<p><a href="'+esc(issues)+'" target="_blank" rel="noopener">'+(en?"Report via GitHub Issues":"GitHubのIssueで報告する")+"</a></p>";
+    if (S.contact) h += "<p>"+(en?"Email: ":"メール：")+esc(S.contact)+"</p>";
+    h += '<p class="note">'+(en?"Map tiles: GSI Japan (地理院タイル)":"地図：地理院タイル（国土地理院）")+"</p>";
+    document.getElementById("body").innerHTML = h;
+  });
+})();
+</script>
+</body>
+</html>
